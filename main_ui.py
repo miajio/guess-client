@@ -96,7 +96,7 @@ class MainUI:
         file = tkfd.asksaveasfilename(title='文件选择', initialfile='out', defaultextension=".txt", filetypes=[("txt", "*.txt"), ("json", "*.json"), ("csv", "*.csv"), ("excel", "*.xlsx")])
         if file is None or file == '':
             return
-        msg = self.text.get('0.0', 'end').replace('\n', '').replace('\t', '')
+        msg = self.text.get('0.0', 'end')
         # 判断导出的文件类型
         match file.split('.')[1]:
             case 'txt'| 'json':
