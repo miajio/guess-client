@@ -1,8 +1,9 @@
 import tkinter as tk
 import tkinter.filedialog as tkfd
-from utils.window import *
+from window import center_window
 import json
 import csv
+from openpyxl import Workbook
 
 encodings = ['utf-8', 'gbk', 'gb18030', 'gb2312']
 
@@ -30,8 +31,8 @@ class MainUI:
 
         self.win = tk.Tk()
         self.win.title("guess-client")
-        self.win.iconbitmap('resources/logo/favicon.ico')
-        self.win.wm_iconbitmap('resources/logo/favicon.ico')
+        self.win.iconbitmap('favicon.ico')
+        self.win.wm_iconbitmap('favicon.ico')
         # 窗口设置全局默认字体
         self.win.option_add("*Font", ("微软雅黑", 9))
 
@@ -92,7 +93,7 @@ class MainUI:
         """
         导出文件
         """
-        file = tkfd.asksaveasfilename(title='文件选择', initialfile='out', defaultextension=".txt", filetypes=[("txt", "*.txt"), ("json", "*.json"), ("csv", "*.csv")])
+        file = tkfd.asksaveasfilename(title='文件选择', initialfile='out', defaultextension=".txt", filetypes=[("txt", "*.txt"), ("json", "*.json"), ("csv", "*.csv"), ("excel", "*.xlsx")])
         if file is None or file == '':
             return
         msg = self.text.get('0.0', 'end').replace('\n', '').replace('\t', '')
@@ -133,5 +134,37 @@ class MainUI:
                         f.write(msg)
 
                 print("导出csv文件")
+            case 'xlsx':
+                try:
+                    wb = Workbook()
+                    ws = wb.active
+
+                    isArray = False
+                    data = json.loads(msg)
+                    keys = []
+                    if isinstance(data, list):
+                        isArray = True
+                        for key in data[0]:
+                            keys.append(key)
+                    else:
+                        for key in data:
+                            keys.append(key)
+                    ws.append(keys)
+                    if isArray:
+                        for val in data:
+                            values = []
+                            for key in keys:
+                                values.append(val[key])
+                            ws.append(values)
+                    else:
+                        values = []
+                        for key in keys:
+                            values.append(data[key])
+                        ws.append(values)
+                    wb.save(file)
+                except:
+                    print("非json文件,无法导出xlsx文件")
+                    with open(file=file.split('.')[0]+".txt", mode='w') as f:
+                        f.write(msg)
             case _:
                 print("未知文件类型")

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from ui.main_ui import MainUI
+from main_ui import MainUI
 import ctypes
 
 myappid = "com.miajio.guess"
